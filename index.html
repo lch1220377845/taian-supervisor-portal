@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>泰安建设监理协会人才管理系统</title>
+  <title>泰安建设监理协会人才管理系统 - 登录</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -20,7 +20,7 @@
       box-shadow: 0 4px 24px rgba(0,0,0,0.10);
       padding: 48px 40px;
       text-align: center;
-      max-width: 480px;
+      max-width: 420px;
       width: 90%;
     }
     .logo {
@@ -32,36 +32,231 @@
       color: #1a3a5c;
       margin-bottom: 8px;
     }
-    p {
+    .subtitle {
       color: #666;
       font-size: 14px;
       margin-bottom: 32px;
     }
-    a.btn {
-      display: inline-block;
+
+    /* 登录表单 */
+    .login-form {
+      text-align: left;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 6px;
+    }
+    .input-row {
+      display: flex;
+      gap: 10px;
+    }
+    .input-row input {
+      flex: 1;
+    }
+    input[type="text"],
+    input[type="tel"] {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid #d9d9d9;
+      border-radius: 6px;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+    input:focus {
+      border-color: #1a6fc4;
+      box-shadow: 0 0 0 2px rgba(26,111,196,0.15);
+    }
+    input::placeholder {
+      color: #bbb;
+    }
+
+    .btn-sms {
+      white-space: nowrap;
+      padding: 11px 16px;
+      border: 1px solid #1a6fc4;
+      background: #fff;
+      color: #1a6fc4;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      min-width: 100px;
+    }
+    .btn-sms:hover {
+      background: #e8f2fb;
+    }
+    .btn-sms:disabled {
+      border-color: #d9d9d9;
+      color: #bbb;
+      background: #fafafa;
+      cursor: not-allowed;
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 12px;
       background: #1a6fc4;
       color: #fff;
-      text-decoration: none;
-      padding: 12px 36px;
+      border: none;
       border-radius: 6px;
       font-size: 16px;
+      cursor: pointer;
       transition: background 0.2s;
+      font-family: inherit;
+      margin-top: 4px;
     }
-    a.btn:hover { background: #155a9e; }
+    .btn-login:hover {
+      background: #155a9e;
+    }
+    .btn-login:disabled {
+      background: #a0c4e8;
+      cursor: not-allowed;
+    }
+
+    .agreement {
+      text-align: center;
+      font-size: 12px;
+      color: #999;
+      margin-top: 16px;
+    }
+    .agreement a {
+      color: #1a6fc4;
+      text-decoration: none;
+    }
+
     .footer {
-      margin-top: 32px;
+      margin-top: 28px;
       font-size: 12px;
       color: #aaa;
+    }
+
+    .error-msg {
+      color: #e74c3c;
+      font-size: 12px;
+      margin-top: 4px;
+      display: none;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="logo"></div>
+    <div class="logo">🏗️</div>
     <h1>泰安建设监理协会<br>人才管理系统</h1>
-    <p>会员单位人员信息管理、证书查询、备用人员公示</p>
-    <a class="btn" href="https://pktwdsn1ud.ai-app.pub" target="_blank">进入系统</a>
-    <div class="footer">2025 </div>
+    <p class="subtitle">会员单位人员信息管理、证书查询、备用人员公示</p>
+
+    <div class="login-form">
+      <div class="form-group">
+        <label>手机号</label>
+        <input type="tel" id="phone" placeholder="请输入手机号" maxlength="11" />
+        <div class="error-msg" id="phoneError">请输入正确的手机号</div>
+      </div>
+
+      <div class="form-group">
+        <label>验证码</label>
+        <div class="input-row">
+          <input type="text" id="smsCode" placeholder="请输入验证码" maxlength="6" />
+          <button class="btn-sms" id="btnSms" onclick="sendSms()">获取验证码</button>
+        </div>
+        <div class="error-msg" id="smsError">请输入验证码</div>
+      </div>
+
+      <button class="btn-login" onclick="doLogin()">登 录</button>
+
+      <div class="agreement">
+        登录即表示同意 <a href="#">《用户协议》</a> 和 <a href="#">《隐私政策》</a>
+      </div>
+    </div>
+
+    <div class="footer">© 2025 泰安建设监理协会</div>
   </div>
+
+  <script>
+    var countdown = 0;
+    var timer = null;
+
+    function sendSms() {
+      var phone = document.getElementById('phone').value.trim();
+
+      if (!/^1[3-9]\d{9}$/.test(phone)) {
+        showError('phoneError', '请输入正确的手机号');
+        return;
+      }
+
+      hideError('phoneError');
+
+      // 模拟发送验证码
+      countdown = 60;
+      var btn = document.getElementById('btnSms');
+      btn.disabled = true;
+
+      timer = setInterval(function () {
+        countdown--;
+        btn.textContent = countdown + 's 后重发';
+        if (countdown <= 0) {
+          clearInterval(timer);
+          btn.textContent = '获取验证码';
+          btn.disabled = false;
+        }
+      }, 1000);
+
+      // TODO: 替换为实际短信发送接口
+      console.log('发送验证码到: ' + phone);
+      alert('验证码已发送（演示模式：输入 123456 即可登录）');
+    }
+
+    function doLogin() {
+      var phone = document.getElementById('phone').value.trim();
+      var code = document.getElementById('smsCode').value.trim();
+      var valid = true;
+
+      if (!/^1[3-9]\d{9}$/.test(phone)) {
+        showError('phoneError', '请输入正确的手机号');
+        valid = false;
+      } else {
+        hideError('phoneError');
+      }
+
+      if (code.length !== 6) {
+        showError('smsError', '请输入6位验证码');
+        valid = false;
+      } else {
+        hideError('smsError');
+      }
+
+      if (!valid) return;
+
+      // TODO: 替换为实际登录接口
+      if (code === '123456') {
+        alert('登录成功，正在跳转...');
+        window.location.href = 'https://pktwdsn1ud.ai-app.pub';
+      } else {
+        showError('smsError', '验证码错误');
+      }
+    }
+
+    function showError(id, msg) {
+      var el = document.getElementById(id);
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+
+    function hideError(id) {
+      var el = document.getElementById(id);
+      el.style.display = 'none';
+    }
+
+    // 手机号输入自动过滤非数字
+    document.getElementById('phone').addEventListener('input', function (e) {
+      this.value = this.value.replace(/\D/g, '');
+    });
+  </script>
 </body>
 </html>
