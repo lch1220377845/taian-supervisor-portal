@@ -1,67 +1,527 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>泰安建设监理协会人才管理系统</title>
   <style>
+    :root {
+      --primary: #1a6fc4;
+      --primary-dark: #155a9e;
+      --bg: #f0f4f8;
+      --white: #fff;
+      --text: #333;
+      --text-light: #666;
+      --border: #e0e0e0;
+      --danger: #e74c3c;
+      --success: #27ae60;
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
-      background: #f0f4f8;
+      background: var(--bg);
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
     }
     .card {
-      background: #fff;
+      background: var(--white);
       border-radius: 12px;
       box-shadow: 0 4px 24px rgba(0,0,0,0.10);
-      padding: 48px 40px;
-      text-align: center;
-      max-width: 480px;
-      width: 90%;
+      padding: 40px;
+      max-width: 520px;
+      width: 92%;
     }
-    .logo {
-      font-size: 48px;
+    .card.wide { max-width: 800px; }
+    .logo { font-size: 48px; text-align: center; margin-bottom: 12px; }
+    h1 { font-size: 20px; color: #1a3a5c; text-align: center; margin-bottom: 6px; }
+    h2 { font-size: 16px; color: #1a3a5c; margin-bottom: 16px; }
+    .sub { color: #666; font-size: 13px; text-align: center; margin-bottom: 28px; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
+    input, select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border 0.2s;
+    }
+    input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,111,196,0.1); }
+    .btn {
+      display: inline-block;
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 11px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-align: center;
+      text-decoration: none;
+    }
+    .btn:hover { background: var(--primary-dark); }
+    .btn-sm {
+      width: auto;
+      padding: 6px 16px;
+      font-size: 13px;
+      border-radius: 6px;
+    }
+    .btn-outline {
+      background: #fff;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+    .btn-outline:hover { background: #f0f7ff; }
+    .btn-danger { background: var(--danger); }
+    .btn-danger:hover { background: #c0392b; }
+    .links {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 13px;
+    }
+    .links a { color: var(--primary); text-decoration: none; margin: 0 8px; }
+    .links a:hover { text-decoration: underline; }
+    .alert {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
       margin-bottom: 16px;
     }
-    h1 {
-      font-size: 22px;
-      color: #1a3a5c;
-      margin-bottom: 8px;
+    .alert-error { background: #ffeaea; color: var(--danger); border: 1px solid #f5c6cb; }
+    .alert-success { background: #eafaf1; color: var(--success); border: 1px solid #c3e6cb; }
+    .alert-info { background: #eaf4ff; color: var(--primary); border: 1px solid #b8daff; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
     }
-    p {
-      color: #666;
-      font-size: 14px;
-      margin-bottom: 32px;
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
     }
-    a.btn {
+    th { background: #f8fafc; font-weight: 600; color: var(--text); }
+    tr:hover td { background: #fafbfc; }
+    .badge {
       display: inline-block;
-      background: #1a6fc4;
-      color: #fff;
-      text-decoration: none;
-      padding: 12px 36px;
-      border-radius: 6px;
-      font-size: 16px;
-      transition: background 0.2s;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
     }
-    a.btn:hover { background: #155a9e; }
-    .footer {
-      margin-top: 32px;
-      font-size: 12px;
-      color: #aaa;
+    .badge-admin { background: #1a3a5c22; color: #1a3a5c; }
+    .badge-user { background: #27ae6022; color: #27ae60; }
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .mb-16 { margin-bottom: 16px; }
+    .text-center { text-align: center; }
+    .text-muted { color: var(--text-light); font-size: 12px; }
+    .spinner {
+      display: inline-block;
+      width: 20px; height: 20px;
+      border: 2px solid #ccc;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 100;
+    }
+    .modal {
+      background: #fff;
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 400px;
+      width: 90%;
+    }
+    .hidden { display: none !important; }
+    @media (max-width: 600px) {
+      .card { padding: 24px 20px; }
+      table { font-size: 11px; }
+      th, td { padding: 6px 8px; }
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="logo">🏗️</div>
+
+  <!-- ========== 登录视图 ========== -->
+  <div class="card" id="view-login">
+    <div class="logo">&#x1F3D7;&#xFE0F;</div>
     <h1>泰安建设监理协会<br>人才管理系统</h1>
-    <p>会员单位人员信息管理、证书查询、备用人员公示</p>
-    <a class="btn" href="https://pktwdsn1ud.ai-app.pub" target="_blank">进入系统</a>
-    <div class="footer">© 2025 泰安建设监理协会</div>
+    <p class="sub">请使用管理员分配的账号登录</p>
+    <div id="login-error"></div>
+    <form id="login-form">
+      <div class="form-group">
+        <label>邮箱</label>
+        <input type="email" id="login-email" placeholder="your@email.com" required />
+      </div>
+      <div class="form-group">
+        <label>密码</label>
+        <input type="password" id="login-password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;" required />
+      </div>
+      <button class="btn" type="submit" id="login-btn">登 录</button>
+    </form>
+    <div class="links">
+      <a href="#" id="link-to-register">首次使用？注册管理员账号 →</a>
+    </div>
   </div>
+
+  <!-- ========== 注册视图 ========== -->
+  <div class="card hidden" id="view-register">
+    <div class="logo">&#x1F510;</div>
+    <h2>注册管理员账号</h2>
+    <p class="sub">第一位注册的用户将自动成为<strong>超级管理员</strong></p>
+    <div id="register-error"></div>
+    <form id="register-form">
+      <div class="form-group">
+        <label>邮箱</label>
+        <input type="email" id="register-email" placeholder="admin@example.com" required />
+      </div>
+      <div class="form-group">
+        <label>密码（至少 6 位）</label>
+        <input type="password" id="register-password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;" minlength="6" required />
+      </div>
+      <div class="form-group">
+        <label>姓名</label>
+        <input type="text" id="register-name" placeholder="您的姓名" />
+      </div>
+      <button class="btn" type="submit" id="register-btn">注 册</button>
+    </form>
+    <div class="links">
+      <a href="#" id="link-to-login">← 返回登录</a>
+    </div>
+  </div>
+
+  <!-- ========== 管理员面板 ========== -->
+  <div class="card wide hidden" id="view-admin">
+    <div class="flex-between mb-16">
+      <div>
+        <div class="logo" style="text-align:left;margin-bottom:0;font-size:32px;">&#x1F3D7;&#xFE0F;</div>
+        <h2 style="margin-bottom:0;">管理控制台</h2>
+      </div>
+      <div>
+        <span class="badge badge-admin" id="admin-badge">管理员</span>
+        <button class="btn btn-sm btn-outline" id="btn-logout-admin" style="margin-left:8px;">退出</button>
+      </div>
+    </div>
+    <div id="admin-alert"></div>
+    <div class="flex-between mb-16">
+      <span style="font-size:14px;font-weight:600;">&#x1F465; 用户列表</span>
+      <button class="btn btn-sm" id="btn-show-create">＋ 创建用户</button>
+    </div>
+    <div id="user-table-container">
+      <div class="text-center" style="padding:40px;"><span class="spinner"></span></div>
+    </div>
+  </div>
+
+  <!-- ========== 普通用户面板 ========== -->
+  <div class="card hidden" id="view-user">
+    <div class="logo">&#x1F3D7;&#xFE0F;</div>
+    <h1>泰安建设监理协会<br>人才管理系统</h1>
+    <div id="user-welcome" class="sub"></div>
+    <div class="alert alert-info">您已成功登录。更多功能请联系管理员开通。</div>
+    <button class="btn btn-sm btn-outline" id="btn-logout-user" style="display:block;margin:0 auto;">退出登录</button>
+  </div>
+
+  <!-- ========== 创建用户弹窗 ========== -->
+  <div class="modal-overlay hidden" id="modal-create">
+    <div class="modal">
+      <h2 style="margin-bottom:16px;">创建新用户</h2>
+      <div id="create-error"></div>
+      <form id="create-form">
+        <div class="form-group">
+          <label>邮箱</label>
+          <input type="email" id="create-email" placeholder="user@example.com" required />
+        </div>
+        <div class="form-group">
+          <label>密码（至少 6 位）</label>
+          <input type="password" id="create-password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;" minlength="6" required />
+        </div>
+        <div class="form-group">
+          <label>姓名</label>
+          <input type="text" id="create-name" placeholder="姓名" />
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn" type="submit" style="flex:1;">创 建</button>
+          <button class="btn btn-outline" type="button" id="btn-close-create" style="flex:1;">取消</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+  // ==================== 配置（改成你自己的 Supabase 信息） ====================
+  const SUPABASE_URL = 'https://你的项目ID.supabase.co';
+  const SUPABASE_ANON_KEY = '你的-anon-key';
+
+  // ==================== Supabase 客户端 ====================
+  const { createClient } = supabase;
+  let sb;
+
+  function initSupabase() {
+    if (SUPABASE_URL.includes('你的项目ID')) {
+      return null; // 未配置
+    }
+    sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    return sb;
+  }
+
+  // ==================== 视图切换 ====================
+  function showView(viewId) {
+    ['view-login', 'view-register', 'view-admin', 'view-user'].forEach(function(id) {
+      document.getElementById(id).classList.add('hidden');
+    });
+    document.getElementById(viewId).classList.remove('hidden');
+    if (viewId === 'view-admin') {
+      document.getElementById(viewId).classList.add('wide');
+    }
+  }
+
+  function showAlert(containerId, msg, type) {
+    var el = document.getElementById(containerId);
+    el.innerHTML = '<div class="alert alert-' + type + '">' + msg + '</div>';
+    if (type === 'success') {
+      setTimeout(function() { el.innerHTML = ''; }, 4000);
+    }
+  }
+
+  // ==================== 加载用户列表（管理员） ====================
+  async function loadUsers() {
+    var container = document.getElementById('user-table-container');
+    try {
+      var result = await sb.from('profiles').select('*').order('created_at', { ascending: false });
+      var data = result.data;
+      var error = result.error;
+      if (error) throw error;
+      if (!data || data.length === 0) {
+        container.innerHTML = '<p class="text-center text-muted" style="padding:24px;">暂无用户</p>';
+        return;
+      }
+      var html = '<table><thead><tr><th>姓名</th><th>邮箱</th><th>角色</th><th>注册时间</th><th>操作</th></tr></thead><tbody>';
+      data.forEach(function(u) {
+        var badge = u.role === 'admin'
+          ? '<span class="badge badge-admin">管理员</span>'
+          : '<span class="badge badge-user">普通用户</span>';
+        var delBtn = u.role !== 'admin'
+          ? '<button class="btn btn-sm btn-danger" onclick="deleteUser(\'' + u.id + '\', \'' + escapeHtml(u.email) + '\')">删除</button>'
+          : '<span class="text-muted">—</span>';
+        var date = new Date(u.created_at).toLocaleDateString('zh-CN');
+        html += '<tr><td>' + escapeHtml(u.full_name || '—') + '</td><td>' + escapeHtml(u.email) + '</td><td>' + badge + '</td><td>' + date + '</td><td>' + delBtn + '</td></tr>';
+      });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    } catch (err) {
+      container.innerHTML = '<div class="alert alert-error">加载失败：' + escapeHtml(err.message) + '</div>';
+    }
+  }
+
+  function escapeHtml(str) {
+    var d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  // ==================== 删除用户 ====================
+  async function deleteUser(userId, email) {
+    if (!confirm('确定要删除用户 "' + email + '" 吗？此操作不可撤销。')) return;
+    var result = await sb.from('profiles').delete().eq('id', userId);
+    if (result.error) {
+      showAlert('admin-alert', '删除失败：' + result.error.message, 'error');
+      return;
+    }
+    showAlert('admin-alert', '用户 "' + email + '" 已删除', 'success');
+    loadUsers();
+  }
+
+  // ==================== 创建用户 ====================
+  document.getElementById('create-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var email = document.getElementById('create-email').value.trim();
+    var password = document.getElementById('create-password').value;
+    var fullName = document.getElementById('create-name').value.trim();
+    var btn = e.target.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = '创建中…';
+
+    var result = await sb.auth.signUp({ email: email, password: password });
+    if (result.error) {
+      showAlert('create-error', '创建失败：' + result.error.message, 'error');
+      btn.disabled = false;
+      btn.textContent = '创 建';
+      return;
+    }
+
+    if (result.data.user && fullName) {
+      await sb.from('profiles').update({ full_name: fullName }).eq('id', result.data.user.id);
+    }
+
+    document.getElementById('modal-create').classList.add('hidden');
+    document.getElementById('create-form').reset();
+    document.getElementById('create-error').innerHTML = '';
+    btn.disabled = false;
+    btn.textContent = '创 建';
+    showAlert('admin-alert', '用户 "' + email + '" 创建成功', 'success');
+    loadUsers();
+  });
+
+  document.getElementById('btn-show-create').addEventListener('click', function() {
+    document.getElementById('modal-create').classList.remove('hidden');
+    document.getElementById('create-error').innerHTML = '';
+    document.getElementById('create-form').reset();
+  });
+
+  document.getElementById('btn-close-create').addEventListener('click', function() {
+    document.getElementById('modal-create').classList.add('hidden');
+  });
+
+  document.getElementById('modal-create').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.add('hidden');
+  });
+
+  // ==================== 登录 ====================
+  document.getElementById('login-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var email = document.getElementById('login-email').value.trim();
+    var password = document.getElementById('login-password').value;
+    var btn = document.getElementById('login-btn');
+    btn.disabled = true;
+    btn.textContent = '登录中…';
+
+    var result = await sb.auth.signInWithPassword({ email: email, password: password });
+    if (result.error) {
+      showAlert('login-error', '登录失败：邮箱或密码错误', 'error');
+      btn.disabled = false;
+      btn.textContent = '登 录';
+      return;
+    }
+  });
+
+  // ==================== 注册 ====================
+  document.getElementById('register-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var email = document.getElementById('register-email').value.trim();
+    var password = document.getElementById('register-password').value;
+    var fullName = document.getElementById('register-name').value.trim();
+    var btn = document.getElementById('register-btn');
+    btn.disabled = true;
+    btn.textContent = '注册中…';
+
+    var adminResult = await sb.from('profiles').select('id').eq('role', 'admin').limit(1);
+    if (adminResult.data && adminResult.data.length > 0) {
+      showAlert('register-error', '管理员已存在，请联系管理员为您创建账号。', 'error');
+      btn.disabled = false;
+      btn.textContent = '注 册';
+      return;
+    }
+
+    var result = await sb.auth.signUp({ email: email, password: password });
+    if (result.error) {
+      showAlert('register-error', '注册失败：' + result.error.message, 'error');
+      btn.disabled = false;
+      btn.textContent = '注 册';
+      return;
+    }
+
+    if (result.data.user && fullName) {
+      await sb.from('profiles').update({ full_name: fullName }).eq('id', result.data.user.id);
+    }
+
+    showAlert('register-error', '注册成功！正在跳转...', 'success');
+    setTimeout(function() {
+      document.getElementById('register-error').innerHTML = '';
+      btn.disabled = false;
+      btn.textContent = '注 册';
+    }, 1500);
+  });
+
+  // ==================== 登出 ====================
+  async function doLogout() {
+    await sb.auth.signOut();
+  }
+
+  document.getElementById('btn-logout-admin').addEventListener('click', doLogout);
+  document.getElementById('btn-logout-user').addEventListener('click', doLogout);
+
+  // ==================== 链接切换 ====================
+  document.getElementById('link-to-register').addEventListener('click', function(e) {
+    e.preventDefault();
+    showView('view-register');
+    document.getElementById('register-error').innerHTML = '';
+  });
+  document.getElementById('link-to-login').addEventListener('click', function(e) {
+    e.preventDefault();
+    showView('view-login');
+    document.getElementById('login-error').innerHTML = '';
+  });
+
+  // ==================== 认证状态监听 ====================
+  async function onAuthStateChange(event, session) {
+    if (!session) {
+      showView('view-login');
+      document.getElementById('login-error').innerHTML = '';
+      document.getElementById('login-form').reset();
+      document.getElementById('login-btn').disabled = false;
+      document.getElementById('login-btn').textContent = '登 录';
+      return;
+    }
+
+    var profileResult = await sb.from('profiles')
+      .select('role, full_name, email')
+      .eq('id', session.user.id)
+      .single();
+    var profile = profileResult.data;
+
+    if (!profile) {
+      setTimeout(function() { onAuthStateChange(event, session); }, 1000);
+      return;
+    }
+
+    if (profile.role === 'admin') {
+      showView('view-admin');
+      loadUsers();
+    } else {
+      showView('view-user');
+      document.getElementById('user-welcome').innerHTML =
+        '欢迎，<strong>' + escapeHtml(profile.full_name || profile.email) + '</strong>';
+    }
+  }
+
+  // ==================== 启动 ====================
+  async function boot() {
+    if (!initSupabase()) {
+      document.getElementById('login-error').innerHTML =
+        '<div class="alert alert-error"><strong>系统尚未配置</strong><br>请将 SUPABASE_URL 和 SUPABASE_ANON_KEY 替换为你的 Supabase 项目信息。</div>';
+      document.getElementById('link-to-register').style.display = 'none';
+      return;
+    }
+
+    sb.auth.onAuthStateChange(onAuthStateChange);
+
+    var sessionResult = await sb.auth.getSession();
+    if (sessionResult.data.session) {
+      await onAuthStateChange(null, sessionResult.data.session);
+    } else {
+      showView('view-login');
+    }
+  }
+
+  boot();
+  </script>
 </body>
 </html>
